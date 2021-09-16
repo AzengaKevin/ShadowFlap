@@ -127,7 +127,7 @@ public class ShadowFlap extends AbstractGame {
 
     private void updatePipesPosition() {
 
-        if ((pipesXPos - PIPES_VELOCITY) < 0.0) pipesXPos = WINDOW_WIDTH;
+        if ((pipesXPos - PIPES_VELOCITY) < (0.0 - pipe.getWidth())) pipesXPos = WINDOW_WIDTH;
 
         pipesXPos -= PIPES_VELOCITY;
 
