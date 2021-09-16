@@ -35,6 +35,8 @@ public class ShadowFlap extends AbstractGame {
     double birdXPos, birdYPos, pipesXPos;
     double birdsYVelocity = 0;
 
+    int birdUpFramesCount;
+
     public ShadowFlap() {
         super(WINDOW_WIDTH, WINDOW_HEIGHT, "ShadowFlap");
 
@@ -61,6 +63,8 @@ public class ShadowFlap extends AbstractGame {
         // Exit the game when escape key is pressed
         if (input.wasPressed(Keys.ESCAPE)) System.exit(0);
 
+        birdUpFramesCount += 1;
+
         drawBackground();
 
         if (currentGameState.equals(GameState.Action)) {
@@ -86,13 +90,22 @@ public class ShadowFlap extends AbstractGame {
         }
 
         if (currentGameState.equals(GameState.Action)) {
-
             drawPipes();
-            birdWingDown.draw(birdXPos, birdYPos);
+            drawBird();
         }
 
         if (currentGameState.equals(GameState.Over)) {
 
+        }
+    }
+
+    private void drawBird() {
+
+        if (birdUpFramesCount >= 10) {
+            birdWingUp.draw(birdXPos, birdYPos);
+            birdUpFramesCount = 0;
+        } else {
+            birdWingDown.draw(birdXPos, birdYPos);
         }
     }
 
@@ -151,6 +164,8 @@ public class ShadowFlap extends AbstractGame {
         birdXPos = BIRD_SPAWN_X_POS;
         birdYPos = BIRD_SPAWN_Y_POS;
         pipesXPos = WINDOW_WIDTH;
+
+        birdUpFramesCount = 0;
     }
 
     private void drawStringFromLeft(String text, double translate, Font font) {
