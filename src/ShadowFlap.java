@@ -43,6 +43,8 @@ public class ShadowFlap extends AbstractGame {
     double birdsYVelocity = 0;
     int score;
 
+    boolean scoreFlag = true;
+
     int birdUpFramesCount;
 
     public ShadowFlap() {
@@ -172,11 +174,23 @@ public class ShadowFlap extends AbstractGame {
     private void updateVariables(Input input) {
         updateBirdPosition(input);
         updatePipesPosition();
+
+        updateScore();
+    }
+
+    private void updateScore() {
+        if (scoreFlag && (pipesXPos < BIRD_SPAWN_X_POS)) {
+            score += 1;
+            scoreFlag = false;
+        }
     }
 
     private void updatePipesPosition() {
 
-        if ((pipesXPos - PIPES_VELOCITY) < (0.0 - pipe.getWidth())) pipesXPos = WINDOW_WIDTH;
+        if ((pipesXPos - PIPES_VELOCITY) < (0.0 - pipe.getWidth())) {
+            pipesXPos = WINDOW_WIDTH;
+            scoreFlag = true;
+        }
 
         pipesXPos -= PIPES_VELOCITY;
 
