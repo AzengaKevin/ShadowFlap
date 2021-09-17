@@ -1,4 +1,6 @@
 import bagel.*;
+import bagel.util.Point;
+import bagel.util.Rectangle;
 
 /**
  * Skeleton Code for SWEN20003 Project 1, Semester 2, 2021
@@ -29,11 +31,17 @@ public class ShadowFlap extends AbstractGame {
     public static final String START_GAME_MESSAGE = "PRESS SPACE TO START";
     public static final String WIN_MESSAGE = "CONGRATULATIONS";
     public static final String GAME_OVER_MESSAGE = "GAME OVER";
+    public static final String SCORE_COUNTER_FORMAT = "SCORE: %d";
+    public static final String FINAL_SCORE_FORMAT = "FINAL SCORE: %d";
+
+    public static final double SCORE_BOTTOM_X_POSITION = 100.0;
+    public static final double SCORE_BOTTOM_Y_POSITION = 100.0;
 
     public static GameState currentGameState = GameState.Start;
 
     double birdXPos, birdYPos, pipesXPos;
     double birdsYVelocity = 0;
+    int score;
 
     int birdUpFramesCount;
 
@@ -69,6 +77,8 @@ public class ShadowFlap extends AbstractGame {
 
         if (currentGameState.equals(GameState.Action)) {
 
+            checkForCollision();
+
             updateVariables(input);
 
         }
@@ -79,24 +89,63 @@ public class ShadowFlap extends AbstractGame {
             }
         }
 
+        if (currentGameState.equals(GameState.Over)) {
+            if (input.wasPressed(Keys.SPACE)) {
+                resetFields();
+                currentGameState = GameState.Action;
+            }
+        }
+
         render();
+
+    }
+
+    private void checkForCollision() {
+
+        // Get the birds bounding box
+        Rectangle birdsBoundingBox;
+
+        if (birdUpFramesCount == 10) {
+            birdsBoundingBox = birdWingUp.getBoundingBoxAt(new Point(BIRD_SPAWN_X_POS, birdYPos));
+        } else {
+            birdsBoundingBox = birdWingDown.getBoundingBoxAt(new Point(BIRD_SPAWN_X_POS, birdYPos));
+        }
+
+        // Get the bounding box for pipes
+        Rectangle topPipeBoundingBox = pipe.getBoundingBoxAt(new Point((pipesXPos + pipe.getWidth() / 2), (TOP_PIPE_Y_POSITION + pipe.getHeight() / 2)));
+        Rectangle bottomPipeBoundingBox = pipe.getBoundingBoxAt(new Point((pipesXPos + pipe.getWidth() / 2), (BOTTOM_PIPE_Y_POSITION + pipe.getHeight() / 2)));
+
+        // Check bird against the top pipe
+        if (birdsBoundingBox.intersects(topPipeBoundingBox)) currentGameState = GameState.Over;
+
+        // Check bird against the bottom ipe
+        if (bottomPipeBoundingBox.intersects(birdsBoundingBox)) currentGameState = GameState.Over;
 
     }
 
     private void render() {
 
         if (currentGameState.equals(GameState.Start)) {
-            drawStringFromLeft(START_GAME_MESSAGE, 0, font);
+            drawStringFromLeftUsingCenter(START_GAME_MESSAGE, 0, font);
         }
 
         if (currentGameState.equals(GameState.Action)) {
             drawPipes();
             drawBird();
+            renderScore();
         }
 
         if (currentGameState.equals(GameState.Over)) {
-
+            drawStringFromLeftUsingCenter(GAME_OVER_MESSAGE, 0, font);
         }
+    }
+
+    private void renderScore() {
+        drawTextFromLeftUsingPoint(
+                String.format(SCORE_COUNTER_FORMAT, score),
+                new Point(SCORE_BOTTOM_X_POSITION, SCORE_BOTTOM_Y_POSITION),
+                font
+        );
     }
 
     private void drawBird() {
@@ -166,14 +215,20 @@ public class ShadowFlap extends AbstractGame {
         pipesXPos = WINDOW_WIDTH;
 
         birdUpFramesCount = 0;
+
+        score = 0;
     }
 
-    private void drawStringFromLeft(String text, double translate, Font font) {
+    private void drawStringFromLeftUsingCenter(String text, double translate, Font font) {
         double textWidth = font.getWidth(text);
         double xPos = (WINDOW_WIDTH / 2.0 - textWidth / 2.0);
         double yPos = (WINDOW_HEIGHT / 2.0) + translate;
 
         font.drawString(text, xPos, yPos);
+    }
+
+    private void drawTextFromLeftUsingPoint(String text, Point point, Font font) {
+        font.drawString(text, point.x, point.y);
     }
 
 }
