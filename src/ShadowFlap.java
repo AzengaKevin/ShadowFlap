@@ -211,6 +211,9 @@ public class ShadowFlap extends AbstractGame {
             if (birdsYVelocity < 10) birdsYVelocity += FALLING_ACCELERATION;
         }
 
+        if (birdYPos < (birdWingDown.getHeight() / 2) || (birdWingDown.getHeight() / 2 + birdYPos) > WINDOW_HEIGHT)
+            currentGameState = GameState.Over;
+
         birdYPos += birdsYVelocity;
     }
 
