@@ -139,6 +139,8 @@ public class ShadowFlap extends AbstractGame {
 
         if (currentGameState.equals(GameState.Over)) {
             drawStringFromLeftUsingCenter(GAME_OVER_MESSAGE, 0, font);
+
+            drawStringFromLeftUsingCenter(String.format(FINAL_SCORE_FORMAT, score), 75, font);
         }
     }
 
